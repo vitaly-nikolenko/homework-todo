@@ -4,18 +4,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private CustomArrayAdapter adapter;
-    private EditText textEntry;
+    private List<String> items = new ArrayList<>();
+    private ArrayAdapter<String> itemsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,27 +26,17 @@ public class MainActivity extends AppCompatActivity {
                 "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
                 "Android", "iPhone", "WindowsMobile"};
 
-
-        adapter = new CustomArrayAdapter(this, R.layout.todo_item, Arrays.asList(values));
+        items.addAll(Arrays.asList(values));
+        itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
 
         ListView listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(adapter);
-
-        textEntry = (EditText) findViewById(R.id.editText);
+        listView.setAdapter(itemsAdapter);
     }
 
     public void addNewItem(View view) {
-        String str = textEntry.getText().toString();
-        if (str.length() < 1) {
-            Toast.makeText(this, R.string.enter_text_label, Toast.LENGTH_LONG).show();
-        } else {
-            adapter.add(str);
-            textEntry.setText("");
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                }
-            });
-        }
+        EditText editText = (EditText) findViewById(R.id.newItemText);
+        String str = editText.getText().toString();
+        itemsAdapter.add(str);
+        editText.setText("");
     }
 }
