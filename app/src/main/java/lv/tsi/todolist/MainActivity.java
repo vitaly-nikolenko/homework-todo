@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         EditText editText = (EditText) findViewById(R.id.newItemText);
         String str = editText.getText().toString();
         itemsAdapter.add(str);
+        itemsAdapter.notifyDataSetChanged();
         editText.setText("");
     }
 }
