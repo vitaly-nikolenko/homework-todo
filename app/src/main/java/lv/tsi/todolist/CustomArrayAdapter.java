@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public class CustomArrayAdapter extends ArrayAdapter<String> {
             vh = (ViewHolder) convertView.getTag();
         }
 
+        Button deleteButton = (Button) convertView.findViewById(R.id.deleteItem);
+        deleteButton.setTag(position);
         vh.textView.setText(getItem(position));
 
         return convertView;
