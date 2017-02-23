@@ -1,23 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
     android:orientation="horizontal">
-
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="false"/>
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/task_name_label"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:focusable="false"/>
 
     <Button
         android:id="@+id/deleteItem"
@@ -25,6 +11,29 @@
         android:layout_height="wrap_content"
         android:text="@string/delete_label"
         android:focusable="false"
-        android:onClick="removeItem"/>
+        android:onClick="removeItem"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/task_name_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:focusable="false"
+        android:layout_marginStart="72dp"
+        android:layout_alignBaseline="@+id/deleteItem"
+        android:layout_alignBottom="@+id/deleteItem" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:onClick="checkItem"
+        android:layout_alignTop="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="7dp" />
+
+</RelativeLayout>
