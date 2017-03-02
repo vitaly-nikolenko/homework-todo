@@ -37,8 +37,8 @@ public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {
         if (toDoItem != null) {
             vh.deleteButton.setTag(position);
             vh.textView.setText(toDoItem.getTitle());
-            vh.checkBox.setTag(position);
             vh.checkBox.setChecked(toDoItem.getChecked());
+            vh.checkBox.setTag(position);
         }
         return convertView;
     }

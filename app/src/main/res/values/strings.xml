@@ -15,4 +15,5 @@
     <string name="save_label">Save</string>
     <string name="days_label">day(s)</string>
     <string name="button_ellipse">…</string>
+    <string name="title_activity_item_description">ItemDescription</string>
 </resources>

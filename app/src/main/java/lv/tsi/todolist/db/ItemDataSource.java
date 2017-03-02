@@ -31,6 +31,24 @@ public class ItemDataSource {
         dbHelper.close();
     }
 
+    public void updateItem(ToDoItem item) {
+
+        ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_TITLE, item.getTitle());
+        values.put(MySQLiteHelper.COLUMN_DESCRIPTION, item.getDescription());
+        values.put(MySQLiteHelper.COLUMN_CHECKED, item.getChecked());
+
+        // Which row to update, based on the title
+        String selection = MySQLiteHelper.COLUMN_ID + " = ?";
+        String[] selectionArgs = {item.getId() + ""};
+
+        database.update(
+                MySQLiteHelper.TABLE_ITEMS,
+                values,
+                selection,
+                selectionArgs);
+    }
+
     public ToDoItem createItem(String text) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_TITLE, text);
@@ -54,19 +72,40 @@ public class ItemDataSource {
 
     public List<ToDoItem> getAllToDoItems() {
         List<ToDoItem> toDoItems = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
+                    allColumns, null, null, null, null, null);
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
-                allColumns, null, null, null, null, null);
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            ToDoItem toDoItem = cursorToItem(cursor);
-            toDoItems.add(toDoItem);
-            cursor.moveToNext();
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                ToDoItem toDoItem = cursorToItem(cursor);
+                toDoItems.add(toDoItem);
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
         }
-        // make sure to close the cursor
-        cursor.close();
         return toDoItems;
+    }
+
+    public ToDoItem getToDoItem(Long id) {
+        Cursor cursor = null;
+        ToDoItem toDoItem = null;
+        try {
+            cursor = database.rawQuery("SELECT * FROM " + MySQLiteHelper.TABLE_ITEMS +
+                    " WHERE " + MySQLiteHelper.COLUMN_ID + "=?", new String[]{id + ""});
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                toDoItem = cursorToItem(cursor);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+        return toDoItem;
     }
 
     private ToDoItem cursorToItem(Cursor cursor) {

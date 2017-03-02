@@ -1,5 +1,6 @@
 package lv.tsi.todolist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,6 +18,7 @@ import lv.tsi.todolist.db.ItemDataSource;
 import lv.tsi.todolist.db.ToDoItem;
 
 public class MainActivity extends AppCompatActivity {
+    public final static String TODO_ITEM = "lv.tsi.todolist.MESSAGE";
 
     private List<ToDoItem> items = new ArrayList<>();
     private ArrayAdapter<ToDoItem> itemsAdapter;
@@ -31,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         dataSource.open();
 
         items = dataSource.getAllToDoItems();
-
         itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
 
         ListView listView = (ListView) findViewById(R.id.listView);
@@ -42,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,
                         "ListItem number " + position + " clicked",
                         Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(MainActivity.this, ItemDetailsActivity.class);
+                intent.putExtra(TODO_ITEM, items.get(position).getId());
+                startActivity(intent);
             }
         });
     }
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         CheckBox checkBox = (CheckBox) view;
         ToDoItem toDoItem = items.get((int) checkBox.getTag());
         toDoItem.setChecked(checkBox.isChecked());
+        dataSource.updateItem(toDoItem);
         itemsAdapter.notifyDataSetChanged();
     }
 
