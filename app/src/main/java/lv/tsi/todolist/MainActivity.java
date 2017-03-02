@@ -11,24 +11,27 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import lv.tsi.todolist.db.ItemDataSource;
+import lv.tsi.todolist.db.ToDoItem;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String KEY_TEXT_VALUE = "textValue";
 
-    private ArrayList<ToDoItem> items = new ArrayList<>();
+    private List<ToDoItem> items = new ArrayList<>();
     private ArrayAdapter<ToDoItem> itemsAdapter;
+    private ItemDataSource dataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState != null) {
-            items = savedInstanceState.getParcelableArrayList(KEY_TEXT_VALUE);
-        } else {
-            items.add(createToDo("Item 1", false));
-            items.add(createToDo("Item 2", true));
-        }
+        dataSource = new ItemDataSource(this);
+        dataSource.open();
+
+        items = dataSource.getAllToDoItems();
+
         itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
 
         ListView listView = (ListView) findViewById(R.id.listView);
@@ -49,36 +52,35 @@ public class MainActivity extends AppCompatActivity {
         if (str.isEmpty()) {
             Toast.makeText(MainActivity.this, "Please enter text", Toast.LENGTH_SHORT).show();
         } else {
-            ToDoItem toDoItem = new ToDoItem();
-            toDoItem.text = str;
-            toDoItem.checked = false;
+            ToDoItem toDoItem = dataSource.createItem(str);
             itemsAdapter.add(toDoItem);
             editText.setText("");
         }
     }
 
     public void removeItem(View view) {
-        items.remove((int)view.findViewById(R.id.deleteItem).getTag());
-        itemsAdapter.notifyDataSetChanged();
+        int index = (int) view.findViewById(R.id.deleteItem).getTag();
+        ToDoItem toDoItem = items.get(index);
+        dataSource.deleteItem(toDoItem);
+        itemsAdapter.remove(toDoItem);
     }
 
     public void checkItem(View view) {
-        CheckBox checkBox = (CheckBox)view;
+        CheckBox checkBox = (CheckBox) view;
         ToDoItem toDoItem = items.get((int) checkBox.getTag());
-        toDoItem.checked = checkBox.isChecked();
+        toDoItem.setChecked(checkBox.isChecked());
         itemsAdapter.notifyDataSetChanged();
     }
 
-    private ToDoItem createToDo(String text, Boolean checked) {
-        ToDoItem toDoItem = new ToDoItem();
-        toDoItem.text = text;
-        toDoItem.checked = checked;
-        return toDoItem;
+    @Override
+    protected void onResume() {
+        dataSource.open();
+        super.onResume();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(KEY_TEXT_VALUE, items);
+    protected void onPause() {
+        dataSource.close();
+        super.onPause();
     }
 }

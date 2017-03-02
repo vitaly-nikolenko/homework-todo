@@ -4,7 +4,7 @@
     <string name="delete_label">Delete</string>
     <string name="add_new_item">New item here</string>
     <string name="due_label">"Due: "</string>
-    <string name="enter_text_label">Please enter some text.</string>
+    <string name="enter_text_label">Please enter some title.</string>
     <string name="task_name_label">Task Name:</string>
     <string name="due_date_label">Due Date:</string>
     <string name="details_label">Details:</string>

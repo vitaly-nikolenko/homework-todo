@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import lv.tsi.todolist.db.ToDoItem;
+
 public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {
     private int resource;
 
@@ -34,9 +36,9 @@ public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {
         ToDoItem toDoItem = getItem(position);
         if (toDoItem != null) {
             vh.deleteButton.setTag(position);
-            vh.textView.setText(toDoItem.text);
+            vh.textView.setText(toDoItem.getTitle());
             vh.checkBox.setTag(position);
-            vh.checkBox.setChecked(toDoItem.checked);
+            vh.checkBox.setChecked(toDoItem.getChecked());
         }
         return convertView;
     }
