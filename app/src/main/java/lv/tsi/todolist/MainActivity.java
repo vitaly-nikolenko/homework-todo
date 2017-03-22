@@ -1,6 +1,8 @@
 package lv.tsi.todolist;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -21,7 +23,9 @@ import lv.tsi.todolist.db.ItemDataSource;
 import lv.tsi.todolist.db.ToDoItem;
 
 public class MainActivity extends AppCompatActivity {
-    public final static String TODO_ITEM = "lv.tsi.todolist.MESSAGE";
+    public static final String TODO_ITEM = "lv.tsi.todolist.MESSAGE";
+    public static final String PREFS_NAME = "MyPrefsFile";
+    public static final String LIST_COLOR = "listColor";
 
     private List<ToDoItem> items = new ArrayList<>();
     private ArrayAdapter<ToDoItem> itemsAdapter;
@@ -33,22 +37,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dataSource = new ItemDataSource(this);
-        dataSource.open();
-
-        items = dataSource.getAllToDoItems();
-        itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
-
-        ListView listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(itemsAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent intent = new Intent(MainActivity.this, ItemDetailsActivity.class);
-                intent.putExtra(TODO_ITEM, items.get(position).getId());
-                startActivity(intent);
-            }
-        });
     }
 
     public void addNewItem(View view) {
@@ -100,6 +88,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         dataSource.open();
+        items = dataSource.getAllToDoItems();
+        itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
+
+        ListView listView = (ListView) findViewById(R.id.listView);
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        int color = settings.getInt(LIST_COLOR, getResources().getColor(R.color.white, getTheme()));
+        listView.setBackgroundColor(color);
+
+        listView.setAdapter(itemsAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ItemDetailsActivity.class);
+                intent.putExtra(TODO_ITEM, items.get(position).getId());
+                startActivity(intent);
+            }
+        });
         super.onResume();
     }
 

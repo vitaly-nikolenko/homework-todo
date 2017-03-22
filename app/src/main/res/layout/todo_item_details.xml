@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <EditText
         android:text="Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,32 +17,24 @@
 
     <EditText
         android:text="Description"
-        android:layout_below="@+id/itemTitle"
-        android:layout_alignStart="@+id/itemTitle"
-        android:layout_marginTop="33dp"
         android:id="@+id/description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:text="Share on Twitter"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/shareBtn"
-        android:layout_toEndOf="@+id/shareBtn"
-        android:layout_marginStart="28dp"
-        android:onClick="shareOnTwitter"
-        android:id="@+id/shareTwitterBtn" />
+        android:layout_below="@+id/itemTitle"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="26dp" />
+
 
     <Button
         android:text="Save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/shareTwitterBtn"
-        android:layout_toEndOf="@+id/shareTwitterBtn"
-        android:layout_marginStart="37dp"
+        android:layout_marginStart="32dp"
         android:onClick="saveChanges"
-        android:id="@+id/saveBtn" />
+        android:id="@+id/saveBtn"
+        android:layout_below="@+id/itemTitle"
+        android:layout_toEndOf="@+id/shareBtn"
+        android:layout_marginTop="120dp" />
 
     <Button
         android:text="Share"
@@ -51,7 +42,8 @@
         android:layout_height="wrap_content"
         android:onClick="shareText"
         android:id="@+id/shareBtn"
-        android:layout_below="@+id/description"
-        android:layout_alignStart="@+id/description"
-        android:layout_marginTop="62dp" />
+        android:layout_marginStart="21dp"
+        android:layout_alignBaseline="@+id/saveBtn"
+        android:layout_alignBottom="@+id/saveBtn"
+        android:layout_toEndOf="@+id/itemTitle" />
 </RelativeLayout>

@@ -5,14 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.tweetcomposer.TweetComposer;
-
-import io.fabric.sdk.android.Fabric;
 import lv.tsi.todolist.db.ItemDataSource;
 import lv.tsi.todolist.db.ToDoItem;
 
@@ -25,9 +19,6 @@ public class ItemDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.todo_item_details);
 
-        TwitterAuthConfig authConfig = new TwitterAuthConfig("consumerKey", "consumerSecret");
-        Fabric.with(this, new TwitterCore(authConfig), new TweetComposer());
-
         Intent intent = getIntent();
         Long id = intent.getLongExtra(MainActivity.TODO_ITEM, 1L);
 
@@ -35,7 +26,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         dataSource.open();
         toDoItem = dataSource.getToDoItem(id);
 
-        TextView title = (TextView) findViewById(R.id.itemTitle);
+        EditText title = (EditText) findViewById(R.id.itemTitle);
         title.setText(toDoItem.getTitle());
 
         EditText description = (EditText) findViewById(R.id.description);
@@ -43,17 +34,18 @@ public class ItemDetailsActivity extends AppCompatActivity {
     }
 
     public void saveChanges(View view) {
-        EditText titleEdit = (EditText) findViewById(R.id.description);
-        String description = titleEdit.getText().toString();
-        toDoItem.setDescription(description);
-        dataSource.updateItem(toDoItem);
-        Toast.makeText(ItemDetailsActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
-    }
-
-    public void shareOnTwitter(View view) {
-        TweetComposer.Builder builder = new TweetComposer.Builder(this)
-                .text(toDoItem.getTitle());
-        builder.show();
+        EditText titleElement = (EditText) findViewById(R.id.itemTitle);
+        String title = titleElement.getText().toString();
+        if (title.isEmpty()) {
+            Toast.makeText(ItemDetailsActivity.this, "Please enter text", Toast.LENGTH_SHORT).show();
+        } else {
+            EditText titleEdit = (EditText) findViewById(R.id.description);
+            String description = titleEdit.getText().toString();
+            toDoItem.setDescription(description);
+            toDoItem.setTitle(title);
+            dataSource.updateItem(toDoItem);
+            Toast.makeText(ItemDetailsActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void shareText(View view) {

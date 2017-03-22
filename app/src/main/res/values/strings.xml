@@ -17,4 +17,7 @@
     <string name="button_ellipse">…</string>
     <string name="title_activity_item_description">ItemDescription</string>
     <string name="title_activity_preferences">PreferencesActivity</string>
+    <string name="background_color">Pick a list background color</string>
+    <string name="white">White</string>
+    <string name="pink">Pink</string>
 </resources>

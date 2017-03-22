@@ -21,13 +21,9 @@ android {
 
 repositories {
     jcenter()
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
-    compile('com.twitter.sdk.android:tweet-composer:2.3.1@aar') {
-        transitive = true;
-    }
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
