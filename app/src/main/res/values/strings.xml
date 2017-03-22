@@ -20,4 +20,6 @@
     <string name="background_color">Pick a list background color</string>
     <string name="white">White</string>
     <string name="pink">Pink</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
 </resources>
