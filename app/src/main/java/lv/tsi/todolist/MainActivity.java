@@ -1,9 +1,11 @@
 package lv.tsi.todolist;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,11 +66,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void removeItem(View view) {
-        int index = (int) view.findViewById(R.id.deleteItem).getTag();
-        ToDoItem toDoItem = items.get(index);
-        dataSource.deleteItem(toDoItem);
-        itemsAdapter.remove(toDoItem);
+    public void removeItem(final View view) {
+        final int index = (int) view.findViewById(R.id.deleteItem).getTag();
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Alert!!");
+        alert.setMessage("Are you sure you want to delete record?");
+        alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ToDoItem toDoItem = items.get(index);
+                dataSource.deleteItem(toDoItem);
+                itemsAdapter.remove(toDoItem);
+                dialog.dismiss();
+            }
+        });
+
+        alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
+
+
     }
 
     public void checkItem(View view) {
