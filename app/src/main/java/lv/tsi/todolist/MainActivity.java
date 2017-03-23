@@ -2,7 +2,7 @@ package lv.tsi.todolist;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private List<ToDoItem> items = new ArrayList<>();
     private ArrayAdapter<ToDoItem> itemsAdapter;
     private ItemDataSource dataSource;
+    private ToDoItemLoadingTask task;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dataSource = new ItemDataSource(this);
+        listView = (ListView) findViewById(R.id.listView);
+        task = new ToDoItemLoadingTask();
+
+        itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
+        listView.setAdapter(itemsAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ItemDetailsActivity.class);
+                intent.putExtra(TODO_ITEM, items.get(position).getId());
+                startActivity(intent);
+            }
+        });
     }
 
     public void addNewItem(View view) {
@@ -88,29 +103,37 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         dataSource.open();
-        items = dataSource.getAllToDoItems();
-        itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
 
-        ListView listView = (ListView) findViewById(R.id.listView);
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        int color = settings.getInt(LIST_COLOR, getResources().getColor(R.color.white, getTheme()));
-        listView.setBackgroundColor(color);
+        listView.setBackgroundColor(getColor());
 
-        listView.setAdapter(itemsAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ItemDetailsActivity.class);
-                intent.putExtra(TODO_ITEM, items.get(position).getId());
-                startActivity(intent);
-            }
-        });
+        task.execute();
         super.onResume();
+    }
+
+    private int getColor() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        return settings.getInt(LIST_COLOR, getResources().getColor(R.color.white, getTheme()));
     }
 
     @Override
     protected void onPause() {
         dataSource.close();
         super.onPause();
+    }
+
+    private class ToDoItemLoadingTask extends AsyncTask<Void, Void, List<ToDoItem>> {
+
+        @Override
+        protected List<ToDoItem> doInBackground(Void... params) {
+            return dataSource.getAllToDoItems();
+        }
+
+        @Override
+        protected void onPostExecute(List<ToDoItem> result) {
+            super.onPostExecute(result);
+            items.clear();
+            items.addAll(result);
+            itemsAdapter.notifyDataSetChanged();
+        }
     }
 }
