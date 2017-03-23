@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     private List<ToDoItem> items = new ArrayList<>();
     private ArrayAdapter<ToDoItem> itemsAdapter;
     private ItemDataSource dataSource;
-    private ToDoItemLoadingTask task;
     ListView listView;
 
     @Override
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
         dataSource = new ItemDataSource(this);
         listView = (ListView) findViewById(R.id.listView);
-        task = new ToDoItemLoadingTask();
 
         itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
         listView.setAdapter(itemsAdapter);
@@ -105,8 +103,9 @@ public class MainActivity extends AppCompatActivity {
         dataSource.open();
 
         listView.setBackgroundColor(getColor());
-
+        ToDoItemLoadingTask task = new ToDoItemLoadingTask();
         task.execute();
+
         super.onResume();
     }
 
