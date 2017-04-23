@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -31,15 +32,17 @@ public class MainActivity extends AppCompatActivity {
 
     private List<ToDoItem> items = new ArrayList<>();
     private ArrayAdapter<ToDoItem> itemsAdapter;
-    private ItemDataSource dataSource;
-    ListView listView;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) {
+            StrictMode.enableDefaults();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dataSource = new ItemDataSource(this);
         listView = (ListView) findViewById(R.id.listView);
 
         itemsAdapter = new CustomArrayAdapter(this, R.layout.todo_item, items);
@@ -60,7 +63,10 @@ public class MainActivity extends AppCompatActivity {
         if (str.isEmpty()) {
             Toast.makeText(MainActivity.this, "Please enter text", Toast.LENGTH_SHORT).show();
         } else {
+            ItemDataSource dataSource = new ItemDataSource(this);
+            dataSource.open();
             ToDoItem toDoItem = dataSource.createItem(str);
+            dataSource.close();
             itemsAdapter.add(toDoItem);
             editText.setText("");
         }
@@ -76,7 +82,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ToDoItem toDoItem = items.get(index);
+                ItemDataSource dataSource = new ItemDataSource(MainActivity.this);
+                dataSource.open();
                 dataSource.deleteItem(toDoItem);
+                dataSource.close();
                 itemsAdapter.remove(toDoItem);
                 dialog.dismiss();
             }
@@ -99,7 +108,10 @@ public class MainActivity extends AppCompatActivity {
         CheckBox checkBox = (CheckBox) view;
         ToDoItem toDoItem = items.get((int) checkBox.getTag());
         toDoItem.setChecked(checkBox.isChecked());
+        ItemDataSource dataSource = new ItemDataSource(MainActivity.this);
+        dataSource.open();
         dataSource.updateItem(toDoItem);
+        dataSource.close();
         itemsAdapter.notifyDataSetChanged();
     }
 
@@ -124,11 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        dataSource.open();
-
         listView.setBackgroundColor(getColor());
-        ToDoItemLoadingTask task = new ToDoItemLoadingTask();
-        task.execute();
+        new ToDoItemLoadingTask().execute();
 
         super.onResume();
     }
@@ -138,25 +147,42 @@ public class MainActivity extends AppCompatActivity {
         return settings.getInt(LIST_COLOR, getResources().getColor(R.color.white, getTheme()));
     }
 
-    @Override
-    protected void onPause() {
-        dataSource.close();
-        super.onPause();
-    }
-
     private class ToDoItemLoadingTask extends AsyncTask<Void, Void, List<ToDoItem>> {
-
+        ItemDataSource dataSource;
         @Override
         protected List<ToDoItem> doInBackground(Void... params) {
+            dataSource = new ItemDataSource(MainActivity.this);
+            dataSource.open();
             return dataSource.getAllToDoItems();
         }
 
         @Override
         protected void onPostExecute(List<ToDoItem> result) {
             super.onPostExecute(result);
+            dataSource.close();
             items.clear();
             items.addAll(result);
             itemsAdapter.notifyDataSetChanged();
         }
     }
+
+    private class ToDiItemCreationTask extends AsyncTask<String, Void, List<ToDoItem>> {
+        ItemDataSource dataSource;
+        @Override
+        protected List<ToDoItem> doInBackground(String... params) {
+            dataSource = new ItemDataSource(MainActivity.this);
+            dataSource.open();
+            return dataSource.getAllToDoItems();
+        }
+
+        @Override
+        protected void onPostExecute(List<ToDoItem> result) {
+            super.onPostExecute(result);
+            dataSource.close();
+            items.clear();
+            items.addAll(result);
+            itemsAdapter.notifyDataSetChanged();
+        }
+    }
+
 }

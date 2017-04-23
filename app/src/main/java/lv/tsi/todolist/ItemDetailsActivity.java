@@ -2,6 +2,7 @@ package lv.tsi.todolist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -25,6 +26,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         dataSource = new ItemDataSource(this);
         dataSource.open();
         toDoItem = dataSource.getToDoItem(id);
+        dataSource.close();
 
         EditText title = (EditText) findViewById(R.id.itemTitle);
         title.setText(toDoItem.getTitle());
@@ -43,7 +45,9 @@ public class ItemDetailsActivity extends AppCompatActivity {
             String description = titleEdit.getText().toString();
             toDoItem.setDescription(description);
             toDoItem.setTitle(title);
+            dataSource.open();
             dataSource.updateItem(toDoItem);
+            dataSource.close();
             Toast.makeText(ItemDetailsActivity.this, "Changes saved", Toast.LENGTH_SHORT).show();
         }
     }
@@ -57,15 +61,11 @@ public class ItemDetailsActivity extends AppCompatActivity {
         startActivity(sendIntent);
     }
 
-    @Override
-    protected void onResume() {
-        dataSource.open();
-        super.onResume();
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, 1);
+        }
     }
 
-    @Override
-    protected void onPause() {
-        dataSource.close();
-        super.onPause();
-    }
 }
